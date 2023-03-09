@@ -1,0 +1,13 @@
+[package]
+name = "lst"
+version = "0.1.0"
+edition = "2021"
+authors = ["Mitchel Vroege <mitchel.vroege@2066d.nl>"]
+description = "Rust implementation of the POSIX ls command"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/MitchelAnthony/lst"
+keywords = ["ls", "files", "directories", "list"]
+categories = ["command-line-utilities", "filesystem"]
+
+[dependencies]
