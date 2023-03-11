@@ -2,7 +2,7 @@
 Rust implementation of the POSIX `ls` command.
 
 [![Crates.io](https://img.shields.io/crates/v/lst.svg)](https://crates.io/crates/lst)
-[![Documentation](https://docs.rs/lst/badge.svg)](https://docs.rs/inferno/)
+[![Documentation](https://docs.rs/lst/badge.svg)](https://docs.rs/lst/)
 [![Dependency status](https://deps.rs/repo/github/MitchelAnthony/lst/status.svg)](https://deps.rs/repo/github/MitchelAnthony/lst)
 
 ## License
