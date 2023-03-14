@@ -9,5 +9,6 @@ readme = "README.md"
 repository = "https://github.com/MitchelAnthony/lst"
 keywords = ["ls", "files", "directories", "list"]
 categories = ["command-line-utilities", "filesystem"]
+rust-version = "1.56"
 
 [dependencies]
