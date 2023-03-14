@@ -36,6 +36,7 @@ where
     U: Reader,
     V: Validator,
 {
+    location: Location,
     // Should these all use dynamic dispatch and support multiple processors?
     filters: Vec<Box<dyn Filter>>,
     formatter: T,
@@ -46,8 +47,9 @@ where
 
 impl Lst<NameOnlyFormatter, FileSystemReader, FileSystemValidator> {
     /// Creates a new `Lst`
-    pub fn new() -> Self {
+    pub fn new(location: Location) -> Self {
         Lst {
+            location,
             filters: vec![Box::new(DotFilesFilter::new())],
             formatter: NameOnlyFormatter::new(),
             reader: FileSystemReader::new(),
@@ -104,6 +106,7 @@ where
     pub fn generate(&self) {
         println!("Generating...");
 
+        println!("{:?}", self.location);
         self.validator.validate();
         self.reader.read();
         for filter in self.filters.iter() {
@@ -118,18 +121,28 @@ where
     }
 }
 
-// fn list_dir(path: &Path) {
-//     let dir_contents = read_dir(path).unwrap();
-//     for entry in dir_contents {
-//         print!("{}  ", entry.unwrap().file_name().into_string().unwrap());
-//     }
-//     println!();
-// }
-//
-// fn show_file(path: &Path) {
-//     // We're not doing anything yet, so let's just print the filename
-//     println!("{}", path.file_name().unwrap().to_str().unwrap());
-// }
+/// The files and directories from will be read from this location. It's not a Path and just wraps a
+/// (owned) string to allow the end user all flexibility when implementing custom processors.
+///
+/// # Examples
+/// ```
+/// # use lst::Location;
+/// let string = String::from("./");
+/// let location_1 = Location::new(&string);
+/// let location_2 = Location::new(string);
+/// let location_3 = Location::new("./");
+/// ```
+#[derive(Clone, Debug, Default)]
+pub struct Location(String);
+
+impl Location {
+    /// Creates a new `Location` using any type of string (reference)
+    pub fn new<T: AsRef<str>>(location: T) -> Self {
+        println!("{}", location.as_ref());
+
+        Location(location.as_ref().to_string())
+    }
+}
 
 #[cfg(test)]
 mod tests {
