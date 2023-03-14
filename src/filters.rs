@@ -1,10 +1,18 @@
 //! # Filters
 //! Implement the `Filter` trait to create a custom Filter or use one of the default filters
 
+use std::fmt::{Debug, Formatter};
+
 /// Filters the input
 pub trait Filter {
     /// Filter
     fn filter(&self);
+}
+
+impl Debug for dyn Filter {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Filter")
+    }
 }
 
 /// TODO

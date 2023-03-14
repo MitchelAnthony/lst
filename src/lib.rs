@@ -29,7 +29,7 @@ use crate::validators::FileSystemValidator;
 
 /// TODO Docs
 #[non_exhaustive]
-// #[derive(Debug)] // TODO Make sure this'll work again. Maybe add copy?
+#[derive(Debug)]
 pub struct Lst<T, U, V>
 where
     T: Formatter,
@@ -121,7 +121,7 @@ where
     }
 }
 
-/// The files and directories from will be read from this location. It's not a Path and just wraps a
+/// The files and directories will be read from this location. It's not a Path and just wraps a
 /// (owned) string to allow the end user all flexibility when implementing custom processors.
 ///
 /// # Examples
