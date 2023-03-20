@@ -27,6 +27,8 @@ use crate::readers::FileSystemReader;
 use crate::sorters::TimeSorter;
 use crate::validators::FileSystemValidator;
 
+use anyhow::Result;
+
 /// TODO Docs
 #[non_exhaustive]
 #[derive(Debug)]
@@ -103,11 +105,10 @@ where
     }
 
     /// Generate the output TODO better docs
-    pub fn generate(&self) {
+    pub fn generate(&self) -> Result<()> {
         println!("Generating...");
 
-        println!("{:?}", self.location);
-        self.validator.validate();
+        self.validator.validate(&self.location.0)?;
         self.reader.read();
         for filter in self.filters.iter() {
             filter.filter();
@@ -117,7 +118,9 @@ where
         }
         self.formatter.format();
 
-        println!("Done!")
+        println!("Done!");
+
+        Ok(())
     }
 }
 
@@ -138,8 +141,6 @@ pub struct Location(String);
 impl Location {
     /// Creates a new `Location` using any type of string (reference)
     pub fn new<T: AsRef<str>>(location: T) -> Self {
-        println!("{}", location.as_ref());
-
         Location(location.as_ref().to_string())
     }
 }

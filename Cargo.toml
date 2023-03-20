@@ -12,3 +12,4 @@ categories = ["command-line-utilities", "filesystem"]
 rust-version = "1.56"
 
 [dependencies]
+anyhow = "1.0.70"
