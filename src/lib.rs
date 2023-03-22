@@ -28,17 +28,20 @@ use crate::sorters::TimeSorter;
 use crate::validators::FileSystemValidator;
 
 use anyhow::Result;
+use std::fs::DirEntry;
 
-/// TODO Docs
+/// The `Lst` struct holds the location and all the processors that will be used when `generate` is called
 #[non_exhaustive]
 #[derive(Debug)]
-pub struct Lst<T, U, V>
+pub struct Lst<T, U, V, W = DirEntry>
 where
     T: Formatter,
-    U: Reader,
+    U: Reader<W>,
     V: Validator,
 {
     location: Location,
+    contents: Vec<W>,
+
     // Should these all use dynamic dispatch and support multiple processors?
     filters: Vec<Box<dyn Filter>>,
     formatter: T,
@@ -52,6 +55,7 @@ impl Lst<NameOnlyFormatter, FileSystemReader, FileSystemValidator> {
     pub fn new(location: Location) -> Self {
         Lst {
             location,
+            contents: Vec::new(),
             filters: vec![Box::new(DotFilesFilter::new())],
             formatter: NameOnlyFormatter::new(),
             reader: FileSystemReader::new(),
@@ -61,10 +65,10 @@ impl Lst<NameOnlyFormatter, FileSystemReader, FileSystemValidator> {
     }
 }
 
-impl<T, U, V> Lst<T, U, V>
+impl<T, U, V, W> Lst<T, U, V, W>
 where
     T: Formatter,
-    U: Reader,
+    U: Reader<W>,
     V: Validator,
 {
     /// Set the `Filter` for `Lst` to use
@@ -105,11 +109,9 @@ where
     }
 
     /// Generate the output TODO better docs
-    pub fn generate(&self) -> Result<()> {
-        println!("Generating...");
-
+    pub fn generate(&mut self) -> Result<()> {
         self.validator.validate(&self.location.0)?;
-        self.reader.read();
+        self.reader.read(&self.location.0, &mut self.contents)?;
         for filter in self.filters.iter() {
             filter.filter();
         }
@@ -118,13 +120,11 @@ where
         }
         self.formatter.format();
 
-        println!("Done!");
-
         Ok(())
     }
 }
 
-/// The files and directories will be read from this location. It's not a Path and just wraps a
+/// The files and directories will be read from this location. It's not a `Path` and just wraps a
 /// (owned) string to allow the end user all flexibility when implementing custom processors.
 ///
 /// # Examples
