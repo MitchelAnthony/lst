@@ -35,7 +35,7 @@ use std::fs::DirEntry;
 #[derive(Debug)]
 pub struct Lst<T, U, V, W = DirEntry>
 where
-    T: Formatter,
+    T: Formatter<W>,
     U: Reader<W>,
     V: Validator,
 {
@@ -67,7 +67,7 @@ impl Lst<NameOnlyFormatter, FileSystemReader, FileSystemValidator> {
 
 impl<T, U, V, W> Lst<T, U, V, W>
 where
-    T: Formatter,
+    T: Formatter<W>,
     U: Reader<W>,
     V: Validator,
 {
@@ -118,7 +118,7 @@ where
         for sorter in self.sorters.iter() {
             sorter.sort();
         }
-        self.formatter.format();
+        self.formatter.format(&self.contents)?;
 
         Ok(())
     }
