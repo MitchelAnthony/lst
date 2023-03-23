@@ -1,4 +1,29 @@
 //! Rust implementation of the POSIX `ls` command
+//!
+//! # Examples
+//! This example will print a string with all non-hidden file and directory names, sorted by creation time.
+//! ```
+//! # use anyhow::Result;
+//! use lst::filters::DotFilesFilter;
+//! use lst::formatters::NameOnlyFormatter;
+//! use lst::readers::FileSystemReader;
+//! use lst::sorters::TimeSorter;
+//! use lst::validators::FileSystemValidator;
+//! use lst::{Location, Lst};
+//!
+//! # fn main() -> Result<()> {
+//! let mut lst = Lst::new(Location::new("./"));
+//! lst.validator(FileSystemValidator::new())
+//!     .reader(FileSystemReader::new())
+//!     .filter(Box::new(DotFilesFilter::new()))
+//!     .sorter(Box::new(TimeSorter::new()))
+//!     .formatter(NameOnlyFormatter::new());
+//!
+//! println!("{}", lst.generate()?);
+//! #
+//! # Ok(())
+//! # }
+//! ```
 
 #![warn(
     rust_2018_compatibility,
