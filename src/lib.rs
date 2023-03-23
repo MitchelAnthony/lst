@@ -43,10 +43,10 @@ where
     contents: Vec<W>,
 
     // Should these all use dynamic dispatch and support multiple processors?
-    filters: Vec<Box<dyn Filter>>,
+    filters: Vec<Box<dyn Filter<W>>>,
     formatter: T,
     reader: U,
-    sorters: Vec<Box<dyn Sorter>>,
+    sorters: Vec<Box<dyn Sorter<W>>>,
     validator: V,
 }
 
@@ -71,8 +71,20 @@ where
     U: Reader<W>,
     V: Validator,
 {
+    /// Set the `Location` for `Lst` to use
+    pub fn location(&mut self, location: Location) -> &mut Self {
+        self.location = location;
+
+        // If we change location, we should start with an empty Vec
+        if !self.contents.is_empty() {
+            self.contents.clear();
+        }
+
+        self
+    }
+
     /// Set the `Filter` for `Lst` to use
-    pub fn filter(&mut self, filter: Box<dyn Filter>) -> &mut Self {
+    pub fn filter(&mut self, filter: Box<dyn Filter<W>>) -> &mut Self {
         self.filters.clear(); // For now, we only support one Filter
         self.filters.push(filter);
 
@@ -94,7 +106,7 @@ where
     }
 
     /// Set the `Sorter` for `Lst` to use
-    pub fn sorter(&mut self, sorter: Box<dyn Sorter>) -> &mut Self {
+    pub fn sorter(&mut self, sorter: Box<dyn Sorter<W>>) -> &mut Self {
         self.sorters.clear(); // For now, we only support one Sorter
         self.sorters.push(sorter);
 
@@ -109,18 +121,18 @@ where
     }
 
     /// Generate the output TODO better docs
-    pub fn generate(&mut self) -> Result<()> {
+    pub fn generate(&mut self) -> Result<String> {
         self.validator.validate(&self.location.0)?;
         self.reader.read(&self.location.0, &mut self.contents)?;
         for filter in self.filters.iter() {
-            filter.filter();
+            filter.filter(&mut self.contents)?;
         }
         for sorter in self.sorters.iter() {
-            sorter.sort();
+            sorter.sort(&mut self.contents)?;
         }
-        self.formatter.format(&self.contents)?;
+        let formatted_string = self.formatter.format(&self.contents)?;
 
-        Ok(())
+        Ok(formatted_string)
     }
 }
 
