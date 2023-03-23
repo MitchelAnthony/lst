@@ -2,12 +2,13 @@
 //! Implement the `Formatter` trait to create a custom Formatter or use one of the default formatters
 
 use anyhow::Result;
+use std::fmt::Write;
 use std::fs::DirEntry;
 
 /// Formats the output
 pub trait Formatter<T> {
     /// Format
-    fn format(&self, buffer: &[T]) -> Result<()>;
+    fn format(&self, buffer: &[T]) -> Result<String>;
 }
 
 /// The `NameOnlyFormatter` ... TODO
@@ -38,13 +39,17 @@ impl NameOnlyFormatter {
 }
 
 impl Formatter<DirEntry> for NameOnlyFormatter {
-    fn format(&self, buffer: &[DirEntry]) -> Result<()> {
-        // TODO Should this output to `stdout` or return some sort of formatted string?
+    fn format(&self, buffer: &[DirEntry]) -> Result<String> {
+        let mut string_buffer = String::new();
         for direntry in buffer {
-            // TODO Check if this conversion might cause issues
-            println!("{}", direntry.file_name().to_string_lossy());
+            writeln!(
+                &mut string_buffer,
+                "{}",
+                // TODO Check if this conversion might cause issues
+                direntry.file_name().to_string_lossy()
+            )?;
         }
 
-        Ok(())
+        Ok(string_buffer)
     }
 }
